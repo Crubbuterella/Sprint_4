@@ -4,10 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 
 public class OrderPage {
+    private final WebDriver driver;
     //Локаторы
     private final By FirstNameField = By.xpath(".//input[contains(@placeholder, 'Имя')]"); // Поле Имя
     private final By LastNameField = By.xpath(".//input[contains(@placeholder, 'Фамилия')]"); // Поле Фамилия
@@ -26,8 +26,6 @@ public class OrderPage {
     private final By OrderStatus = By.xpath(".//div[contains(@class, 'Order_Content')]//div[text()='Заказ оформлен']"); // Модальное окно с "Заказ оформлен"
     private final By CheckStatusButton = By.xpath(".//div[contains(@class, 'Order_Content')]//button[text()='Посмотреть статус']"); // Кнопка посмотреть статус
 
-
-    private WebDriver driver;
     public OrderPage(WebDriver driver) {
         this.driver = driver;
     }
@@ -92,7 +90,7 @@ public class OrderPage {
 
     public void clickConfirmOrderButton() {
         driver.findElement(ConfirmOrderButton).click();
-    } // Подтверждение заказа (Баг в Chrome)
+    } // Подтверждение заказа !!!Не работает в Chrome!!!
 
     public boolean isStatusButtonDisplayed() {
         new WebDriverWait(driver, Duration.ofSeconds(10))

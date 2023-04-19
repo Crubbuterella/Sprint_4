@@ -1,73 +1,67 @@
 package ru.yandex.praktikum.pageobjects;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.hamcrest.MatcherAssert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import static org.hamcrest.core.Is.is;
+//import org.openqa.selenium.firefox.FirefoxDriver;
 
 @RunWith(Parameterized.class)
 public class QuestionsTest {
 
     private WebDriver driver;
-    private final By question;
-    private final By answer;
+    private final int accordionIndex;
     private final String answerText;
 
     //конструктор класса
-    public QuestionsTest(By question, By answer, String answerText) {
-        this.question = question;
-        this.answer = answer;
+    public QuestionsTest(int accordionIndex, String answerText) {
+        this.accordionIndex = accordionIndex;
         this.answerText = answerText;
     }
 
     //параметризация
-    @Parameterized.Parameters
-    public static Object[][] getCredentials(){
-        return new Object[][] {
-                {MainPage.question1, MainPage.answer1, MainPage.answer1Text},
-                {MainPage.question2, MainPage.answer2, MainPage.answer2Text},
-                {MainPage.question3, MainPage.answer3, MainPage.answer3Text},
-                {MainPage.question4, MainPage.answer4, MainPage.answer4Text},
-                {MainPage.question5, MainPage.answer5, MainPage.answer5Text},
-                {MainPage.question6, MainPage.answer6, MainPage.answer6Text},
-                {MainPage.question7, MainPage.answer7, MainPage.answer7Text},
-                {MainPage.question8, MainPage.answer8, MainPage.answer8Text}
+    @Parameterized.Parameters(name = "Проверяем аккордеон. Индекс аккордеона: {0}")
+    public static Object[][] getCredentials() {
+        return new Object[][]{
+                {0, "Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
+                {1, "Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."},
+                {2, "Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30."},
+                {3, "Только начиная с завтрашнего дня. Но скоро станем расторопнее."},
+                {4, "Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010."},
+                {5, "Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится."},
+                {6, "Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои."},
+                {7, "Да, обязательно. Всем самокатов! И Москве, и Московской области."}
         };
 
     }
 
     @Before
-    public void Init() {
+    public void driverInit() {
         WebDriverManager.chromedriver().setup();
         //WebDriverManager.firefoxdriver().setup();
         //driver = new FirefoxDriver();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
+        driver.get("https://qa-scooter.praktikum-services.ru/");
     }
 
     @Test
-    public void shownAnswers() {
+    public void checkAnswers() {
         MainPage mainPage = new MainPage(driver);
-        mainPage.MainPageOpen();
         mainPage.clickCookie();
-        mainPage.ScrollToQuestions();
-        mainPage.clickQuestion(question);
-        mainPage.getAnswerText(answer);
-        MatcherAssert.assertThat(mainPage.getAnswerText(answer), is(answerText));
+        mainPage.scrollToQuestions();
+        Assert.assertEquals(answerText, mainPage.getAnswerText(accordionIndex));
     }
 
     @After
-    public void EndTest() {
+    public void teardown() {
         driver.quit();
     }
 
